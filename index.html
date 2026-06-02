@@ -153,11 +153,10 @@
           const card = document.createElement('div');
           card.className = 'card';
           card.innerHTML = `
-            ${f['Emoji'] ? `<div class="emoji">${f['Emoji']}</div>` : ''}
-            <div class="message">"${f['Message'] || ''}"</div>
-            <div class="recipient">${f['Recipient Name'] || ''}</div>
-            <div class="recipient-dept">${f['Recipient Department'] || ''}</div>
-            <div class="from">From <span>${f['Your Name'] || 'Anonymous'}</span> · ${f['Your Department'] || ''}</div>
+            <div class="message">"${f['Your message'] || ''}"</div>
+  <div class="recipient">${f['Who is this...'] || ''}</div>
+  <div class="recipient-dept">${f['Their department'] || ''}</div>
+  <div class="from">From <span>${f['Your name'] || 'Anonymous'}</span> · ${f['Your department'] || ''}</div>
           `;
           grid.appendChild(card);
         });
