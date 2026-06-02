@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -48,8 +48,6 @@
       background: linear-gradient(135deg, #004080, #001c32);
       border-radius: 16px;
       padding: 28px;
-      border: 1.5px solid transparent;
-      background-clip: padding-box;
       position: relative;
       animation: fadeIn 0.5s ease;
     }
@@ -61,11 +59,6 @@
       border-radius: 16px;
       background: linear-gradient(135deg, #e60000, #ffffff, #e60000);
       z-index: -1;
-    }
-
-    .card .emoji {
-      font-size: 28px;
-      margin-bottom: 12px;
     }
 
     .card .message {
@@ -129,7 +122,7 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.8fc6529c90cdd09a3e65b77fe44c24f62c6827a09a4799ee857188b4e1785e4b';
+    const TOKEN = 'YOUR_NEW_TOKEN_HERE';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -154,9 +147,9 @@
           card.className = 'card';
           card.innerHTML = `
             <div class="message">"${f['Your message'] || ''}"</div>
-  <div class="recipient">${f['Who is this...'] || ''}</div>
-  <div class="recipient-dept">${f['Their department'] || ''}</div>
-  <div class="from">From <span>${f['Your name'] || 'Anonymous'}</span> · ${f['Your department'] || ''}</div>
+            <div class="recipient">${f['Who is this...'] || ''}</div>
+            <div class="recipient-dept">${f['Their department'] || ''}</div>
+            <div class="from">From <span>${f['Your name'] || 'Anonymous'}</span> · ${f['Your department'] || ''}</div>
           `;
           grid.appendChild(card);
         });
