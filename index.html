@@ -77,7 +77,7 @@
       background: rgba(255, 255, 255, 0.5);
       width: fit-content;
       min-width: 326px;
-      max-width: 480px;
+      max-width: 400px;
       opacity: 0;
       transform: scale(0.9);
     }
@@ -87,7 +87,7 @@
       padding: 32px 36px;
       width: fit-content;
       min-width: 320px;
-      max-width: 474px;
+      max-width: 394px;
     }
     .card-top {
       display: flex;
@@ -156,14 +156,14 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.f852a8bec95fb1d01e3e5cc0416b00ed182edf036981e5689d42f82c7ae1ae07';
+    const TOKEN = 'patNkkOOneKrjQRUH.fc334fb16878f03789148163f173e268e5ce084c2590a83b09b34191744a82a6';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
     const MARGIN = 24;
     const MAX_CARDS = 4;
     const HEADER_H = 230;
-    const CARD_DURATION = 5000;
+    const CARD_DURATION = 3000;
     const SPAWN_INTERVAL = 2000;
 
     let activeCards = [];
@@ -217,8 +217,8 @@
       const start = performance.now();
       const startScale = 0.9;
       const endScale = 1.06;
-      const fadeInDuration = 800;
-      const fadeOutStart = duration - 600;
+      const fadeInDuration = 600;
+      const fadeOutStart = duration - 500;
 
       function frame(now) {
         const elapsed = now - start;
@@ -233,7 +233,7 @@
         if (elapsed < fadeInDuration) {
           opacity = elapsed / fadeInDuration;
         } else if (elapsed > fadeOutStart) {
-          opacity = 1 - (elapsed - fadeOutStart) / 600;
+          opacity = 1 - (elapsed - fadeOutStart) / 500;
         }
         el.style.transform = `scale(${scale})`;
         el.style.opacity = Math.max(0, Math.min(1, opacity));
