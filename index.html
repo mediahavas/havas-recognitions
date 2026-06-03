@@ -161,7 +161,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.6a593aac0eca21151bdd21d85ed572e3611192d4c3f409c80a36f07bc7688b18';
+    const TOKEN = 'patNkkOOneKrjQRUH.41799a7543d469d5f5d5f95269e6182783d2ebe930ea55b66421d8562e6f8636';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -355,10 +355,12 @@
 
         animateCard(wrapper, CARD_DURATION);
 
+        // Spawn next card 500ms before this one disappears
+        setTimeout(() => spawnCard(), CARD_DURATION - 500);
+
         setTimeout(() => {
           wrapper.remove();
           activeCards = activeCards.filter(c => c !== cardEntry);
-          spawnCard();
         }, CARD_DURATION);
       });
     }
