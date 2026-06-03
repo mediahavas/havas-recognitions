@@ -156,7 +156,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.43a25539d6ff627a80b2e67e848a02636fca169aba8f352e74d0de88b310106d';
+    const TOKEN = 'patNkkOOneKrjQRUH.f852a8bec95fb1d01e3e5cc0416b00ed182edf036981e5689d42f82c7ae1ae07';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -170,6 +170,14 @@
     let records = [];
     let recordIndex = 0;
 
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     async function fetchRecords() {
       try {
         const res = await fetch(
@@ -178,7 +186,8 @@
         );
         const data = await res.json();
         if (data.records && data.records.length > 0) {
-          records = data.records;
+          records = shuffle(data.records);
+          recordIndex = 0;
         }
       } catch (err) {
         console.error(err);
@@ -292,9 +301,9 @@
     async function init() {
       await fetchRecords();
       setTimeout(() => spawnCard(), 0);
-      setTimeout(() => spawnCard(), 800);
-      setTimeout(() => spawnCard(), 1600);
-      setTimeout(() => spawnCard(), 2400);
+      setTimeout(() => spawnCard(), 1500);
+      setTimeout(() => spawnCard(), 3000);
+      setTimeout(() => spawnCard(), 4500);
       setInterval(() => {
         if (activeCards.length < MAX_CARDS) spawnCard();
       }, SPAWN_INTERVAL);
