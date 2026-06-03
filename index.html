@@ -156,7 +156,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.250c3156adb3e028a7143f44d457f21f7edd3fc7367955f888e22fdf99fcf834';
+    const TOKEN = 'patNkkOOneKrjQRUH.8b7690977758afe485fe9556f7bb9662807884da4a5a9465d8c7f31ebc7d6f82';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -172,11 +172,12 @@
     let lastRecordId = null;
 
     function shuffle(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+        [a[i], a[j]] = [a[j], a[i]];
       }
-      return arr;
+      return a;
     }
 
     async function fetchRecords() {
@@ -195,6 +196,28 @@
       } catch (err) {
         console.error(err);
       }
+    }
+
+    function getNextRecord() {
+      if (records.length === 0) return null;
+
+      // When we've gone through all records reshuffle for next cycle
+      if (recordIndex >= records.length) {
+        records = shuffle([...records]);
+        recordIndex = 0;
+      }
+
+      // Swap with next to avoid back to back repeat
+      if (records[recordIndex].id === lastRecordId && records.length > 1) {
+        const temp = records[recordIndex];
+        records[recordIndex] = records[(recordIndex + 1) % records.length];
+        records[(recordIndex + 1) % records.length] = temp;
+      }
+
+      const record = records[recordIndex];
+      recordIndex++;
+      lastRecordId = record.id;
+      return record;
     }
 
     function rectsOverlap(a, b) {
@@ -243,19 +266,6 @@
         requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
-    }
-
-    function getNextRecord() {
-      if (records.length === 0) return null;
-      let attempts = 0;
-      let record;
-      do {
-        record = records[recordIndex % records.length];
-        recordIndex++;
-        attempts++;
-      } while (record.id === lastRecordId && attempts < records.length);
-      lastRecordId = record.id;
-      return record;
     }
 
     function spawnCard() {
