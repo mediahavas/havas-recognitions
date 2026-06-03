@@ -1,165 +1,198 @@
-<!DOCTYPE html>
+html<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Havas Shoutouts</title>
+  <title>Havas Wall of Fame</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background-color: #001c32;
-      font-family: 'Arial', sans-serif;
-      color: white;
-      min-height: 100vh;
-      padding: 40px;
+      background: #000;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
       text-align: center;
-      margin-bottom: 50px;
+      padding: 30px 0 20px;
+      flex-shrink: 0;
     }
 
     header h1 {
-      font-size: 48px;
-      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 6px;
       color: #e60000;
-      letter-spacing: 4px;
       text-transform: uppercase;
+      font-weight: 900;
+      margin-bottom: 6px;
     }
 
     header p {
-      font-size: 16px;
-      color: rgba(255,255,255,0.5);
-      margin-top: 8px;
-      letter-spacing: 2px;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #333;
       text-transform: uppercase;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
-      max-width: 1400px;
-      margin: 0 auto;
+    .stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
     }
 
     .card {
-      background: linear-gradient(135deg, #004080, #001c32);
-      border-radius: 16px;
-      padding: 28px;
-      position: relative;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .card::before {
-      content: '';
       position: absolute;
-      inset: -1.5px;
+      background: #111;
+      border: 1px solid #222;
       border-radius: 16px;
-      background: linear-gradient(135deg, #e60000, #ffffff, #e60000);
-      z-index: -1;
+      padding: 28px 32px;
+      width: 300px;
+      opacity: 0;
+      transition: opacity 1s ease;
     }
 
-    .card .message {
-      font-size: 16px;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 20px;
+    .card.visible {
+      opacity: 1;
     }
 
-    .card .recipient {
-      font-size: 18px;
-      font-weight: 700;
+    .eyebrow {
+      font-size: 9px;
+      letter-spacing: 3px;
       color: #e60000;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
 
-    .card .recipient-dept {
-      font-size: 12px;
-      color: rgba(255,255,255,0.4);
+    .name {
+      font-size: 36px;
+      font-weight: 900;
+      color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-top: 2px;
+      line-height: 1.0;
+      margin-bottom: 16px;
     }
 
-    .card .from {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      font-size: 13px;
-      color: rgba(255,255,255,0.5);
+    .message {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-style: italic;
     }
 
-    .card .from span {
-      color: white;
-      font-weight: 600;
+    .sender {
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 1px;
     }
 
-    .loading {
-      text-align: center;
-      color: rgba(255,255,255,0.4);
-      font-size: 18px;
-      margin-top: 100px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .no-data {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #333;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Havas Shoutouts</h1>
+    <h1>Havas Wall of Fame</h1>
     <p>Recognizing the people who make us great</p>
   </header>
 
-  <div class="grid" id="grid">
-    <div class="loading">Loading shoutouts...</div>
+  <div class="stage" id="stage">
+    <div class="no-data" id="noData" style="display:none">No shoutouts yet — be the first!</div>
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.d30fb687dba4824cef6f94d767928d268054ac3ace7951033eb5e5b84a22f85d';
+    const TOKEN = 'patNkkOOneKrjQRUH.856e49d0295c02ddb7118618ec136ba248cf6b50068e0130bda4131f38c11347';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
-    async function fetchShoutouts() {
+    let records = [];
+    let activeCards = [];
+    let recordIndex = 0;
+
+    async function fetchRecords() {
       try {
         const res = await fetch(
           `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}?sort[0][field]=Created&sort[0][direction]=desc`,
           { headers: { Authorization: `Bearer ${TOKEN}` } }
         );
         const data = await res.json();
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '';
-
-        if (!data.records || data.records.length === 0) {
-          grid.innerHTML = '<div class="loading">No shoutouts yet — be the first!</div>';
-          return;
+        if (data.records && data.records.length > 0) {
+          records = data.records;
+          document.getElementById('noData').style.display = 'none';
+        } else {
+          document.getElementById('noData').style.display = 'block';
         }
-
-        data.records.forEach(record => {
-          const f = record.fields;
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <div class="message">"${f['Your message'] || ''}"</div>
-            <div class="recipient">${f['Who is this testimonial for?'] || ''}</div>
-            <div class="recipient-dept">${f['Their department'] || ''}</div>
-            <div class="from">From <span>${f['Your name'] || 'Anonymous'}</span> · ${f['Your department'] || ''}</div>
-          `;
-          grid.appendChild(card);
-        });
       } catch (err) {
         console.error(err);
       }
     }
 
-    fetchShoutouts();
-    setInterval(fetchShoutouts, 30000);
+    function getRandomPosition(cardWidth, cardHeight) {
+      const stage = document.getElementById('stage');
+      const maxX = stage.offsetWidth - cardWidth - 20;
+      const maxY = stage.offsetHeight - cardHeight - 20;
+      return {
+        x: Math.floor(Math.random() * maxX) + 10,
+        y: Math.floor(Math.random() * maxY) + 10
+      };
+    }
+
+    function spawnCard() {
+      if (records.length === 0) return;
+
+      const stage = document.getElementById('stage');
+      const record = records[recordIndex % records.length];
+      recordIndex++;
+
+      const f = record.fields;
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      card.innerHTML = `
+        <div class="eyebrow">${f['Their department'] || ''}</div>
+        <div class="name">${f['Who is this testimonial for?'] || ''}</div>
+        <div class="message">"${f['Your message'] || ''}"</div>
+        <div class="sender">— ${f['Your name'] || 'Anonymous'}</div>
+      `;
+
+      const pos = getRandomPosition(300, 220);
+      card.style.left = pos.x + 'px';
+      card.style.top = pos.y + 'px';
+
+      stage.appendChild(card);
+
+      setTimeout(() => card.classList.add('visible'), 50);
+
+      setTimeout(() => {
+        card.classList.remove('visible');
+        setTimeout(() => card.remove(), 1000);
+      }, 5000);
+    }
+
+    async function init() {
+      await fetchRecords();
+      if (records.length > 0) spawnCard();
+
+      setInterval(spawnCard, 3000);
+      setInterval(fetchRecords, 30000);
+    }
+
+    init();
   </script>
 
 </body>
