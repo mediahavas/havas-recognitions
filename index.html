@@ -156,7 +156,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.39ecb9e20121afd814baf990ffbe2fb9d4cb7c2b3f498ae67af5486229b6ad56';
+    const TOKEN = 'patNkkOOneKrjQRUH.0b62baf403181386b6e07466b13b95518c757c3a1c4251b85758540b7c75431a';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -169,6 +169,7 @@
     let activeCards = [];
     let records = [];
     let recordIndex = 0;
+    let lastRecordId = null;
 
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -242,11 +243,25 @@
       requestAnimationFrame(frame);
     }
 
+    function getNextRecord() {
+      if (records.length === 0) return null;
+      // Skip if same as last shown to prevent back to back repeats
+      let attempts = 0;
+      let record;
+      do {
+        record = records[recordIndex % records.length];
+        recordIndex++;
+        attempts++;
+      } while (record.id === lastRecordId && attempts < records.length);
+      lastRecordId = record.id;
+      return record;
+    }
+
     function spawnCard() {
       if (activeCards.length >= MAX_CARDS || records.length === 0) return;
 
-      const record = records[recordIndex % records.length];
-      recordIndex++;
+      const record = getNextRecord();
+      if (!record) return;
       const f = record.fields;
 
       const stage = document.getElementById('stage');
@@ -302,12 +317,12 @@
       await fetchRecords();
       setTimeout(() => spawnCard(), 0);
       setTimeout(() => spawnCard(), 1500);
-      setTimeout(() => spawnCard(), 4000);
+      setTimeout(() => spawnCard(), 3000);
       setTimeout(() => spawnCard(), 4500);
       setInterval(() => {
         if (activeCards.length < MAX_CARDS) spawnCard();
       }, SPAWN_INTERVAL);
-      setInterval(fetchRecords, 30000);
+      setInterval(fetchRecords, 3000);
     }
 
     init();
