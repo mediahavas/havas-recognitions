@@ -7,8 +7,13 @@
   <style>
     @font-face {
       font-family: 'BaikalExp';
-      src: url('BaikalExp-SemiBold.otf') format('opentype');
+      src: url('BaikalExp-Bold.otf') format('opentype');
       font-weight: 700;
+    }
+    @font-face {
+      font-family: 'BaikalExpSemi';
+      src: url('BaikalExp-SemiBold.otf') format('opentype');
+      font-weight: 600;
     }
     @font-face {
       font-family: 'BaikalNormal';
@@ -45,9 +50,9 @@
       margin-right: auto;
     }
     header h1 {
-      font-family: 'BaikalExp', Arial, sans-serif;
+      font-family: 'BaikalExpSemi', Arial, sans-serif;
       font-size: 68px;
-      font-weight: 700;
+      font-weight: 600;
       color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -121,9 +126,9 @@
       line-height: 1;
     }
     .name {
-      font-family: 'BaikalExp', Arial, sans-serif;
+      font-family: 'BaikalExpSemi', Arial, sans-serif;
       font-size: 26px;
-      font-weight: 700;
+      font-weight: 600;
       color: #000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -156,7 +161,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.fb593b762e13ccfca9d121dd5672c9a1ca33be3a4b3ecedcf606135f37d992f8';
+    const TOKEN = 'patNkkOOneKrjQRUH.a4e8cf68a03e7f25be55cf6706d2d8adb508e153ab3d3edd8b3a54800e217f27';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -220,12 +225,12 @@
 
         if (notOnScreen && notRecentlyShown) {
           recentlyShown.push(candidateName);
-          if (recentlyShown.length > 2) recentlyShown.shift();
+          const bufferSize = Math.max(1, records.length - 1);
+          if (recentlyShown.length > bufferSize) recentlyShown.shift();
           return candidate;
         }
       }
 
-      // Fallback
       const record = records[recordIndex % records.length];
       recordIndex++;
       return record;
