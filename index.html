@@ -156,7 +156,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.8b7690977758afe485fe9556f7bb9662807884da4a5a9465d8c7f31ebc7d6f82';
+    const TOKEN = 'patNkkOOneKrjQRUH.eee73d90923454f59f3f46c7a1f847c880ee895637067640073809d66f00e969';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -169,7 +169,7 @@
     let activeCards = [];
     let records = [];
     let recordIndex = 0;
-    let lastRecordId = null;
+    let recentlyShown = [];
 
     function shuffle(arr) {
       const a = [...arr];
@@ -201,22 +201,33 @@
     function getNextRecord() {
       if (records.length === 0) return null;
 
-      // When we've gone through all records reshuffle for next cycle
       if (recordIndex >= records.length) {
         records = shuffle([...records]);
         recordIndex = 0;
       }
 
-      // Swap with next to avoid back to back repeat
-      if (records[recordIndex].id === lastRecordId && records.length > 1) {
-        const temp = records[recordIndex];
-        records[recordIndex] = records[(recordIndex + 1) % records.length];
-        records[(recordIndex + 1) % records.length] = temp;
+      const activeNames = activeCards.map(c => c.name);
+
+      let attempts = 0;
+      while (attempts < records.length) {
+        const candidate = records[recordIndex % records.length];
+        const candidateName = candidate.fields['Recipient'] || '';
+        const notOnScreen = !activeNames.includes(candidateName);
+        const notRecentlyShown = !recentlyShown.includes(candidateName);
+
+        recordIndex++;
+        attempts++;
+
+        if (notOnScreen && notRecentlyShown) {
+          recentlyShown.push(candidateName);
+          if (recentlyShown.length > 2) recentlyShown.shift();
+          return candidate;
+        }
       }
 
-      const record = records[recordIndex];
+      // Fallback
+      const record = records[recordIndex % records.length];
       recordIndex++;
-      lastRecordId = record.id;
       return record;
     }
 
@@ -311,7 +322,7 @@
         wrapper.style.top = pos.y + 'px';
         wrapper.style.transformOrigin = 'center center';
 
-        const cardEntry = { el: wrapper, rect: pos };
+        const cardEntry = { el: wrapper, rect: pos, name: f['Recipient'] || '' };
         activeCards.push(cardEntry);
 
         animateCard(wrapper, CARD_DURATION);
