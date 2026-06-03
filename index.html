@@ -40,6 +40,9 @@
     .havas-logo {
       height: 28px;
       margin-bottom: 8px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
     header h1 {
       font-family: 'BaikalExp', Arial, sans-serif;
@@ -145,7 +148,7 @@
 <body>
 
   <header>
-    <img class="havas-logo" src="Havas_Logo.svg" alt="Havas"/>
+    <img class="havas-logo" src="Havas_Logo.svg" alt="Havas" onerror="this.style.display='none'"/>
     <h1>Wall of Fame</h1>
     <p>Recognizing the people who make us great</p>
   </header>
@@ -153,7 +156,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.689d88c3d3952931877d683ac36bb15e19c06610039cc1cd1d1674f5fc7a2865';
+    const TOKEN = 'patNkkOOneKrjQRUH.43a25539d6ff627a80b2e67e848a02636fca169aba8f352e74d0de88b310106d';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -245,12 +248,12 @@
           <div class="card-top">
             <div class="emoji-circle">${f['Emoji'] || '⭐'}</div>
             <div class="name-block">
-              <div class="eyebrow">${f['Their department'] || ''}</div>
-              <div class="name">${f['Who is this...'] || ''}</div>
+              <div class="eyebrow">${f['Department'] || ''}</div>
+              <div class="name">${f['Recipient'] || ''}</div>
             </div>
           </div>
-          <div class="message">"${f['Your message'] || ''}"</div>
-          <div class="sender">— ${f['Your name'] || ''}</div>
+          <div class="message">"${f['Message'] || ''}"</div>
+          <div class="sender">— ${f['Name'] || ''}</div>
         </div>
       `;
 
