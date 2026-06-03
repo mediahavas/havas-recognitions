@@ -161,12 +161,12 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.240f53c7e99212bf630b44d3fc36ab7c60e3946012a33fad2557e02a9a2c1921';
+    const TOKEN = 'patNkkOOneKrjQRUH.6a593aac0eca21151bdd21d85ed572e3611192d4c3f409c80a36f07bc7688b18';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
     const MARGIN = 24;
-    let MAX_CARDS = 2;
+    let MAX_CARDS = 1;
     const HEADER_H = 230;
     const CARD_DURATION = 3000;
     const SPAWN_INTERVAL = 1000;
@@ -175,6 +175,7 @@
     let records = [];
     let recordIndex = 0;
     let recentlyShown = [];
+    let lastZone = -1;
 
     function shuffle(arr) {
       const a = [...arr];
@@ -199,7 +200,7 @@
           }
           if (records.length <= 3) {
             MAX_CARDS = 1;
-          } else if (records.length <= 7) {
+          } else if (records.length <= 8) {
             MAX_CARDS = 2;
           } else {
             MAX_CARDS = 3;
@@ -253,9 +254,24 @@
     function findPosition(w, h) {
       const stageW = window.innerWidth;
       const stageH = window.innerHeight;
-      for (let attempt = 0; attempt < 150; attempt++) {
-        const x = Math.floor(Math.random() * (stageW - w - MARGIN * 2)) + MARGIN;
-        const y = Math.floor(Math.random() * (stageH - h - HEADER_H - MARGIN)) + HEADER_H;
+
+      const zones = [
+        { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
+        { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
+        { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: stageH / 2, yMax: stageH - h - MARGIN },
+        { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: stageH / 2, yMax: stageH - h - MARGIN }
+      ];
+
+      let zoneIndex;
+      do {
+        zoneIndex = Math.floor(Math.random() * zones.length);
+      } while (zoneIndex === lastZone && zones.length > 1);
+      lastZone = zoneIndex;
+
+      const zone = zones[zoneIndex];
+      for (let attempt = 0; attempt < 50; attempt++) {
+        const x = Math.floor(Math.random() * Math.max(1, zone.xMax - zone.xMin)) + zone.xMin;
+        const y = Math.floor(Math.random() * Math.max(1, zone.yMax - zone.yMin)) + zone.yMin;
         const candidate = { x, y, w, h };
         if (!activeCards.some(c => rectsOverlap(candidate, c.rect))) return candidate;
       }
