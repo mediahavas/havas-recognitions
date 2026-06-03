@@ -161,12 +161,12 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.a4e8cf68a03e7f25be55cf6706d2d8adb508e153ab3d3edd8b3a54800e217f27';
+    const TOKEN = 'patNkkOOneKrjQRUH.6d6a2c058cd84d69a541a9c197b101dcefc8f849ab94c4364fc59aa1d77cc70d';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
     const MARGIN = 24;
-    const MAX_CARDS = 4;
+    let MAX_CARDS = 2;
     const HEADER_H = 230;
     const CARD_DURATION = 3000;
     const SPAWN_INTERVAL = 1000;
@@ -196,6 +196,13 @@
           if (data.records.length !== records.length) {
             records = shuffle(data.records);
             recordIndex = 0;
+          }
+          if (records.length <= 4) {
+            MAX_CARDS = 2;
+          } else if (records.length <= 8) {
+            MAX_CARDS = 3;
+          } else {
+            MAX_CARDS = 4;
           }
         }
       } catch (err) {
