@@ -77,7 +77,7 @@
       background: rgba(255, 255, 255, 0.5);
       width: fit-content;
       min-width: 326px;
-      max-width: 400px;
+      max-width: 480px;
       opacity: 0;
       transform: scale(0.9);
     }
@@ -87,7 +87,7 @@
       padding: 32px 36px;
       width: fit-content;
       min-width: 320px;
-      max-width: 394px;
+      max-width: 474px;
     }
     .card-top {
       display: flex;
@@ -156,7 +156,7 @@
   <div class="stage" id="stage"></div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.fc334fb16878f03789148163f173e268e5ce084c2590a83b09b34191744a82a6';
+    const TOKEN = 'patNkkOOneKrjQRUH.39ecb9e20121afd814baf990ffbe2fb9d4cb7c2b3f498ae67af5486229b6ad56';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -302,7 +302,7 @@
       await fetchRecords();
       setTimeout(() => spawnCard(), 0);
       setTimeout(() => spawnCard(), 1500);
-      setTimeout(() => spawnCard(), 3000);
+      setTimeout(() => spawnCard(), 4000);
       setTimeout(() => spawnCard(), 4500);
       setInterval(() => {
         if (activeCards.length < MAX_CARDS) spawnCard();
