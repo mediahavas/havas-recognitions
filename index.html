@@ -193,13 +193,14 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.b0c79957fb9ad1f2394d6390e4676e0a3bc6c59b30f05aa0a647769d8dc851dd';
+    const TOKEN = 'patNkkOOneKrjQRUH.f15467aa44765a3c604f208d2c991a83cf47ef86bcfd3a80e7626b9fa2b27581';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
-    const MARGIN = 48;
-    const QR_SAFE_WIDTH = 230;
-    const QR_SAFE_HEIGHT = 280;
+    const PAD = 40;
+    const MIN_DIST = 80;
+    const QR_SAFE_WIDTH = 240;
+    const QR_SAFE_HEIGHT = 290;
     let MAX_CARDS = 1;
     const HEADER_H = 240;
     const SPAWN_INTERVAL = 500;
@@ -278,58 +279,48 @@
         queue.push(queue.shift());
         attempts++;
       }
-      const record = queue.shift();
-      return record;
+      return queue.shift();
     }
 
-    function rectsOverlap(a, b) {
-      return !(a.x + a.w + MARGIN < b.x ||
-               b.x + b.w + MARGIN < a.x ||
-               a.y + a.h + MARGIN < b.y ||
-               b.y + b.h + MARGIN < a.y);
+    function tooClose(ax, ay, aw, ah, bx, by, bw, bh) {
+      const acx = ax + aw / 2;
+      const acy = ay + ah / 2;
+      const bcx = bx + bw / 2;
+      const bcy = by + bh / 2;
+      const dx = Math.abs(acx - bcx);
+      const dy = Math.abs(acy - bcy);
+      return dx < (aw / 2 + bw / 2 + MIN_DIST) && dy < (ah / 2 + bh / 2 + MIN_DIST);
     }
 
     function findPosition(w, h) {
       const stageW = window.innerWidth;
       const stageH = window.innerHeight;
-      const pad = MARGIN;
       const qrZone = { x: 0, y: stageH - QR_SAFE_HEIGHT, w: QR_SAFE_WIDTH, h: QR_SAFE_HEIGHT };
 
-      // Define spread slots based on MAX_CARDS
-      let slots;
-      if (MAX_CARDS === 1) {
-        slots = [
-          { x: stageW / 2 - w / 2, y: (HEADER_H + stageH) / 2 - h / 2 }
-        ];
-      } else if (MAX_CARDS === 2) {
-        slots = [
-          { x: pad, y: (HEADER_H + stageH) / 2 - h / 2 },
-          { x: stageW - w - pad, y: (HEADER_H + stageH) / 2 - h / 2 }
-        ];
-      } else {
-        slots = [
-          { x: pad, y: HEADER_H + pad },
-          { x: stageW - w - pad, y: HEADER_H + pad },
-          { x: stageW / 2 - w / 2, y: stageH - h - pad }
-        ];
+      for (let attempt = 0; attempt < 200; attempt++) {
+        const x = Math.floor(Math.random() * (stageW - w - PAD * 2)) + PAD;
+        const y = Math.floor(Math.random() * (stageH - h - HEADER_H - PAD)) + HEADER_H;
+
+        const inQR = x < qrZone.x + qrZone.w && x + w > qrZone.x &&
+                     y < qrZone.y + qrZone.h && y + h > qrZone.y;
+        if (inQR) continue;
+
+        const tooCloseToOther = activeCards.some(c =>
+          tooClose(x, y, w, h, c.rect.x, c.rect.y, c.rect.w, c.rect.h)
+        );
+        if (tooCloseToOther) continue;
+
+        return { x, y, w, h };
       }
 
-      // Try each slot with slight jitter, check for overlaps
-      const shuffledSlots = shuffle(slots);
-      for (const slot of shuffledSlots) {
-        const jitterX = (Math.random() - 0.5) * 60;
-        const jitterY = (Math.random() - 0.5) * 40;
-        const x = Math.max(pad, Math.min(stageW - w - pad, slot.x + jitterX));
-        const y = Math.max(HEADER_H + pad, Math.min(stageH - h - pad, slot.y + jitterY));
-        const candidate = { x, y, w, h };
-
-        const overlapsCard = activeCards.some(c => rectsOverlap(candidate, c.rect));
-        const overlapsQR = rectsOverlap(candidate, qrZone);
-
-        if (!overlapsCard && !overlapsQR) return candidate;
+      // Fallback — relax distance requirement
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const x = Math.floor(Math.random() * (stageW - w - PAD * 2)) + PAD;
+        const y = Math.floor(Math.random() * (stageH - h - HEADER_H - PAD)) + HEADER_H;
+        const inQR = x < qrZone.x + qrZone.w && x + w > qrZone.x &&
+                     y < qrZone.y + qrZone.h && y + h > qrZone.y;
+        if (!inQR) return { x, y, w, h };
       }
-
-      // If no slot works, return null — card won't spawn
       return null;
     }
 
