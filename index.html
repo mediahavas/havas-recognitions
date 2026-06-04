@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Havas Wall of Fame</title>
+  <title>Havas Wall of Thanks</title>
   <style>
     @font-face {
       font-family: 'BaikalExpSemi';
@@ -179,8 +179,8 @@
 
   <header>
     <img class="hmn-logo" src="hmn.svg" alt="Havas Media Network"/>
-    <h1>Wall of Fame</h1>
-    <p>Celebrating our newest promotions</p>
+    <h1>Wall of Thanks</h1>
+    <p>Recognizing the people who make us great</p>
   </header>
 
   <div class="stage" id="stage"></div>
@@ -193,11 +193,11 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.7d8ed320f162c37aa1856efbc9a254586b5140e79dd16070ab57b2caad7aeaf2';
+    const TOKEN = 'patNkkOOneKrjQRUH.188b143ed415d7f45eb1f55f73af3caef651e9f328174b4b9fcc60e25430d724';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
-    const MARGIN = 32;
+    const MARGIN = 80;
     const QR_SAFE_WIDTH = 230;
     const QR_SAFE_HEIGHT = 280;
     let MAX_CARDS = 1;
@@ -251,7 +251,7 @@
           }
           if (records.length <= 3) {
             MAX_CARDS = 1;
-          } else if (records.length <= 8) {
+          } else if (records.length <= 7) {
             MAX_CARDS = 2;
           } else {
             MAX_CARDS = 3;
