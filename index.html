@@ -193,11 +193,11 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.188b143ed415d7f45eb1f55f73af3caef651e9f328174b4b9fcc60e25430d724';
+    const TOKEN = 'patNkkOOneKrjQRUH.c3f9bc6cc95b78ac87c00b9e7adfce4d1cd74020d00a82f688f1303005e43f1a';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
-    const MARGIN = 80;
+    const MARGIN = 48;
     const QR_SAFE_WIDTH = 230;
     const QR_SAFE_HEIGHT = 280;
     let MAX_CARDS = 1;
@@ -208,7 +208,7 @@
     let records = [];
     let queue = [];
     let recentlyShown = [];
-    let lastZone = -1;
+    let slotIndex = 0;
 
     function getCardDuration(message) {
       const len = message.length;
@@ -251,7 +251,7 @@
           }
           if (records.length <= 3) {
             MAX_CARDS = 1;
-          } else if (records.length <= 7) {
+          } else if (records.length <= 6) {
             MAX_CARDS = 2;
           } else {
             MAX_CARDS = 3;
@@ -265,7 +265,6 @@
     function getNextRecord() {
       if (records.length === 0) return null;
       if (queue.length === 0) buildQueue();
-
       const activeNames = activeCards.map(c => c.name);
       let attempts = 0;
       while (attempts < queue.length) {
@@ -284,44 +283,47 @@
       return record;
     }
 
-    function rectsOverlap(a, b) {
-      return !(a.x + a.w + MARGIN < b.x ||
-               b.x + b.w + MARGIN < a.x ||
-               a.y + a.h + MARGIN < b.y ||
-               b.y + b.h + MARGIN < a.y);
-    }
-
-    function findPosition(w, h) {
+    function getSlotPosition(w, h) {
       const stageW = window.innerWidth;
       const stageH = window.innerHeight;
+      const midX = stageW / 2;
+      const midY = (HEADER_H + stageH) / 2;
+      const pad = MARGIN;
 
-      const qrZone = { x: 0, y: stageH - QR_SAFE_HEIGHT, w: QR_SAFE_WIDTH, h: QR_SAFE_HEIGHT };
-
-      const zones = [
-        { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
-        { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
-        { xMin: QR_SAFE_WIDTH + MARGIN, xMax: stageW / 2 - w / 2, yMin: stageH / 2, yMax: stageH - h - MARGIN },
-        { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: stageH / 2, yMax: stageH - h - MARGIN }
-      ];
-
-      let zoneIndex;
-      do {
-        zoneIndex = Math.floor(Math.random() * zones.length);
-      } while (zoneIndex === lastZone && zones.length > 1);
-      lastZone = zoneIndex;
-
-      const zone = zones[zoneIndex];
-      for (let attempt = 0; attempt < 80; attempt++) {
-        const x = Math.floor(Math.random() * Math.max(1, zone.xMax - zone.xMin)) + zone.xMin;
-        const y = Math.floor(Math.random() * Math.max(1, zone.yMax - zone.yMin)) + zone.yMin;
-        const clampedX = Math.max(MARGIN, Math.min(stageW - w - MARGIN, x));
-        const clampedY = Math.max(HEADER_H, Math.min(stageH - h - MARGIN, y));
-        const candidate = { x: clampedX, y: clampedY, w, h };
-        const overlapsCard = activeCards.some(c => rectsOverlap(candidate, c.rect));
-        const overlapsQR = rectsOverlap(candidate, qrZone);
-        if (!overlapsCard && !overlapsQR) return candidate;
+      let slots;
+      if (MAX_CARDS === 1) {
+        slots = [
+          { x: midX - w / 2, y: midY - h / 2 }
+        ];
+      } else if (MAX_CARDS === 2) {
+        slots = [
+          { x: pad, y: midY - h / 2 },
+          { x: stageW - w - pad, y: midY - h / 2 }
+        ];
+      } else {
+        slots = [
+          { x: pad, y: HEADER_H + pad },
+          { x: stageW - w - pad, y: HEADER_H + pad },
+          { x: midX - w / 2, y: stageH - h - pad }
+        ];
       }
-      return null;
+
+      const slot = slots[slotIndex % slots.length];
+      slotIndex++;
+
+      const jitterX = (Math.random() - 0.5) * 80;
+      const jitterY = (Math.random() - 0.5) * 60;
+
+      const x = Math.max(pad, Math.min(stageW - w - pad, slot.x + jitterX));
+      const y = Math.max(HEADER_H + pad, Math.min(stageH - h - pad, slot.y + jitterY));
+
+      const qrRight = QR_SAFE_WIDTH + pad;
+      const qrTop = stageH - QR_SAFE_HEIGHT;
+      if (x < qrRight && y > qrTop) {
+        return { x: qrRight, y, w, h };
+      }
+
+      return { x, y, w, h };
     }
 
     function animateCard(el, duration) {
@@ -387,18 +389,13 @@
       requestAnimationFrame(() => {
         const w = wrapper.offsetWidth;
         const h = wrapper.offsetHeight;
-        const pos = findPosition(w, h);
-
-        if (!pos) {
-          wrapper.remove();
-          return;
-        }
+        const pos = getSlotPosition(w, h);
 
         wrapper.style.left = pos.x + 'px';
         wrapper.style.top = pos.y + 'px';
         wrapper.style.transformOrigin = 'center center';
 
-        const cardEntry = { el: wrapper, rect: pos, name: f['Recipient'] || '' };
+        const cardEntry = { el: wrapper, rect: { x: pos.x, y: pos.y, w, h }, name: f['Recipient'] || '' };
         activeCards.push(cardEntry);
 
         animateCard(wrapper, duration);
