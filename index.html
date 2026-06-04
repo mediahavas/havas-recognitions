@@ -52,8 +52,9 @@
     }
     header p {
       font-family: 'BaikalNormalReg', Arial, sans-serif;
-      font-size: 22px;
+      font-size: 20px;
       color: #ffffff;
+      font-weight: 300;
     }
     .stage {
       position: absolute;
@@ -189,16 +190,16 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.bc89ccc68c5fd3fa26a0dc6272f298877c02f1941b37257bbf019418321e3d70';
+    const TOKEN = 'patNkkOOneKrjQRUH.1e364962c8bd8febc5c24c2fd60999d1cfed3a74dbe24129a6fdd449294edc15';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
-    const MARGIN = 24;
-    const QR_SAFE_WIDTH = 220;
-    const QR_SAFE_HEIGHT = 260;
+    const MARGIN = 32;
+    const QR_SAFE_WIDTH = 230;
+    const QR_SAFE_HEIGHT = 280;
     let MAX_CARDS = 1;
-    const HEADER_H = 230;
-    const SPAWN_INTERVAL = 1000;
+    const HEADER_H = 240;
+    const SPAWN_INTERVAL = 500;
 
     let activeCards = [];
     let records = [];
@@ -285,13 +286,13 @@
       const stageW = window.innerWidth;
       const stageH = window.innerHeight;
 
-      // QR safe zone — bottom left
       const qrZone = { x: 0, y: stageH - QR_SAFE_HEIGHT, w: QR_SAFE_WIDTH, h: QR_SAFE_HEIGHT };
 
+      // Keep cards fully within screen with generous margin
       const zones = [
         { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
         { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
-        { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: stageH / 2, yMax: stageH - h - MARGIN },
+        { xMin: QR_SAFE_WIDTH + MARGIN, xMax: stageW / 2 - w / 2, yMin: stageH / 2, yMax: stageH - h - MARGIN },
         { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: stageH / 2, yMax: stageH - h - MARGIN }
       ];
 
@@ -302,10 +303,15 @@
       lastZone = zoneIndex;
 
       const zone = zones[zoneIndex];
-      for (let attempt = 0; attempt < 50; attempt++) {
+      for (let attempt = 0; attempt < 80; attempt++) {
         const x = Math.floor(Math.random() * Math.max(1, zone.xMax - zone.xMin)) + zone.xMin;
         const y = Math.floor(Math.random() * Math.max(1, zone.yMax - zone.yMin)) + zone.yMin;
-        const candidate = { x, y, w, h };
+
+        // Clamp to screen bounds
+        const clampedX = Math.max(MARGIN, Math.min(stageW - w - MARGIN, x));
+        const clampedY = Math.max(HEADER_H, Math.min(stageH - h - MARGIN, y));
+
+        const candidate = { x: clampedX, y: clampedY, w, h };
         const overlapsCard = activeCards.some(c => rectsOverlap(candidate, c.rect));
         const overlapsQR = rectsOverlap(candidate, qrZone);
         if (!overlapsCard && !overlapsQR) return candidate;
@@ -392,7 +398,8 @@
 
         animateCard(wrapper, duration);
 
-        setTimeout(() => spawnCard(), duration - 500);
+        // Spawn next card just as this one starts fading out
+        setTimeout(() => spawnCard(), duration - 600);
 
         setTimeout(() => {
           wrapper.remove();
