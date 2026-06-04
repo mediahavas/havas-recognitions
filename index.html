@@ -5,26 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Havas Wall of Thanks</title>
   <style>
-    @font-face {
-      font-family: 'BaikalExpSemi';
-      src: url('BaikalExp-SemiBold.otf') format('opentype');
-    }
-    @font-face {
-      font-family: 'BaikalNormalReg';
-      src: url('BaikalNormal-Regular.otf') format('opentype');
-    }
-    @font-face {
-      font-family: 'BaikalNormalSemi';
-      src: url('BaikalNormal-SemiBold.otf') format('opentype');
-    }
+    @font-face { font-family: 'BaikalExpSemi'; src: url('BaikalExp-SemiBold.otf') format('opentype'); }
+    @font-face { font-family: 'BaikalNormalReg'; src: url('BaikalNormal-Regular.otf') format('opentype'); }
+    @font-face { font-family: 'BaikalNormalSemi'; src: url('BaikalNormal-SemiBold.otf') format('opentype'); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-image: url('Background.png');
       background-size: cover;
       background-position: top center;
       font-family: 'BaikalNormalReg', Arial, sans-serif;
-      width: 100vw;
-      height: 100vh;
+      width: 100vw; height: 100vh;
       overflow: hidden;
       position: relative;
     }
@@ -34,186 +24,81 @@
       position: relative;
       z-index: 10;
     }
-    .hmn-logo {
-      height: 24px;
-      margin-bottom: 16px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
+    .hmn-logo { height: 24px; margin-bottom: 16px; display: block; margin-left: auto; margin-right: auto; }
     header h1 {
       font-family: 'BaikalExpSemi', Arial, sans-serif;
-      font-size: 68px;
-      color: #ffffff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      line-height: 1;
-      margin-bottom: 12px;
+      font-size: 68px; color: #ffffff;
+      text-transform: uppercase; letter-spacing: 2px;
+      line-height: 1; margin-bottom: 12px;
     }
     header p {
       font-family: 'BaikalNormalReg', Arial, sans-serif;
-      font-size: 24px;
-      color: #ffffff;
-      font-weight: 300;
+      font-size: 24px; color: #ffffff; font-weight: 300;
     }
-    .stage {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
+    .stage { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
     .card-wrapper {
       position: absolute;
-      border-radius: 22px;
-      padding: 3px;
-      background: rgba(255, 255, 255, 0.5);
-      width: fit-content;
-      min-width: 326px;
-      max-width: 480px;
-      opacity: 0;
-      transform: scale(0.9);
+      border-radius: 22px; padding: 3px;
+      background: rgba(255,255,255,0.5);
+      width: fit-content; min-width: 326px; max-width: 480px;
+      opacity: 0; transform: scale(0.9);
       will-change: transform, opacity;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
     }
     .card {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 32px 36px;
-      width: fit-content;
-      min-width: 320px;
-      max-width: 474px;
+      background: #ffffff; border-radius: 20px;
+      padding: 32px 36px; width: fit-content;
+      min-width: 320px; max-width: 474px;
     }
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
+    .card-top { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
     .emoji-circle {
-      width: 56px;
-      height: 56px;
-      background: #b3ecf7;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      flex-shrink: 0;
+      width: 56px; height: 56px; background: #b3ecf7;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 28px; flex-shrink: 0;
     }
-    .name-block {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
-    }
-    .eyebrow {
-      font-family: 'BaikalNormalSemi', Arial, sans-serif;
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: #e60000;
-      text-transform: uppercase;
-      line-height: 1;
-    }
-    .name {
-      font-family: 'BaikalExpSemi', Arial, sans-serif;
-      font-size: 26px;
-      color: #000;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      line-height: 1.1;
-    }
-    .message {
-      font-family: 'BaikalNormalReg', Arial, sans-serif;
-      font-size: 17px;
-      color: #222;
-      line-height: 1.3;
-      margin-bottom: 18px;
-    }
-    .sender {
-      font-family: 'BaikalNormalReg', Arial, sans-serif;
-      font-size: 14px;
-      color: #000;
-    }
-    .qr-container {
-      position: fixed;
-      bottom: 32px;
-      left: 32px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-    .qr-box {
-      width: 170px;
-      height: 170px;
-      background: #000000;
-      border-radius: 16px;
-      border: 4px solid rgba(230, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      box-shadow: none;
-    }
-    .qr-box img {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    .qr-label {
-      font-family: 'BaikalExpSemi', Arial, sans-serif;
-      font-size: 14px;
-      color: #ffffff;
-      text-align: center;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      line-height: 1.4;
-    }
+    .name-block { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+    .eyebrow { font-family: 'BaikalNormalSemi', Arial, sans-serif; font-size: 12px; letter-spacing: 1px; color: #e60000; text-transform: uppercase; line-height: 1; }
+    .name { font-family: 'BaikalExpSemi', Arial, sans-serif; font-size: 26px; color: #000; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.1; }
+    .message { font-family: 'BaikalNormalReg', Arial, sans-serif; font-size: 17px; color: #222; line-height: 1.3; margin-bottom: 18px; }
+    .sender { font-family: 'BaikalNormalReg', Arial, sans-serif; font-size: 14px; color: #000; }
+    .qr-container { position: fixed; bottom: 32px; left: 32px; z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .qr-box { width: 170px; height: 170px; background: #000; border-radius: 16px; border: 4px solid rgba(230,0,0,0.7); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .qr-box img { width: 100%; height: 100%; display: block; }
+    .qr-label { font-family: 'BaikalExpSemi', Arial, sans-serif; font-size: 14px; color: #fff; text-align: center; letter-spacing: 1px; text-transform: uppercase; line-height: 1.4; }
   </style>
 </head>
 <body>
-
   <header>
     <img class="hmn-logo" src="hmn.svg" alt="Havas Media Network"/>
     <h1>Wall of Thanks</h1>
     <p>Recognizing the people who make us great</p>
   </header>
-
   <div class="stage" id="stage"></div>
-
   <div class="qr-container">
-    <div class="qr-box">
-      <img src="qrcode.svg" alt="QR Code" style="filter: invert(1);"/>
-    </div>
+    <div class="qr-box"><img src="qrcode.svg" alt="QR Code" style="filter:invert(1);"/></div>
     <div class="qr-label">SCAN TO SEND<br>A SHOUTOUT</div>
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.f15467aa44765a3c604f208d2c991a83cf47ef86bcfd3a80e7626b9fa2b27581';
+    const TOKEN = 'patNkkOOneKrjQRUH.0324a72a7539b951e4dea2eaf4e3fa0218c512f0ec5c978c49830bc92a63651c';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
     const PAD = 40;
-    const MIN_DIST = 80;
-    const QR_SAFE_WIDTH = 240;
-    const QR_SAFE_HEIGHT = 290;
-    let MAX_CARDS = 1;
+    const GAP = 40;
+    const QR_W = 240, QR_H = 290;
     const HEADER_H = 240;
     const SPAWN_INTERVAL = 500;
+    let MAX_CARDS = 1;
 
     let activeCards = [];
-    let records = [];
-    let queue = [];
-    let recentlyShown = [];
+    let records = [], queue = [], recentlyShown = [];
+    let spawning = false;
 
-    function getCardDuration(message) {
-      const len = message.length;
-      if (len <= 80) return 3000;
-      if (len <= 160) return 5000;
+    function getCardDuration(msg) {
+      const l = msg.length;
+      if (l <= 80) return 3000;
+      if (l <= 160) return 5000;
       return 7000;
     }
 
@@ -227,14 +112,12 @@
     }
 
     function buildQueue() {
-      let shuffled = shuffle([...records]);
-      if (recentlyShown.length > 0 && shuffled.length > 1) {
-        const lastName = recentlyShown[recentlyShown.length - 1];
-        if (shuffled[0].fields['Recipient'] === lastName) {
-          shuffled.push(shuffled.shift());
-        }
+      let s = shuffle([...records]);
+      if (recentlyShown.length > 0 && s.length > 1) {
+        const last = recentlyShown[recentlyShown.length - 1];
+        if (s[0].fields['Recipient'] === last) s.push(s.shift());
       }
-      queue = shuffled;
+      queue = s;
     }
 
     async function fetchRecords() {
@@ -249,30 +132,22 @@
             records = data.records;
             buildQueue();
           }
-          if (records.length <= 3) {
-            MAX_CARDS = 1;
-          } else if (records.length <= 6) {
-            MAX_CARDS = 2;
-          } else {
-            MAX_CARDS = 3;
-          }
+          MAX_CARDS = records.length <= 3 ? 1 : records.length <= 6 ? 2 : 3;
         }
-      } catch (err) {
-        console.error(err);
-      }
+      } catch(e) { console.error(e); }
     }
 
     function getNextRecord() {
-      if (records.length === 0) return null;
-      if (queue.length === 0) buildQueue();
+      if (!records.length) return null;
+      if (!queue.length) buildQueue();
       const activeNames = activeCards.map(c => c.name);
       let attempts = 0;
       while (attempts < queue.length) {
         const candidate = queue[0];
-        const candidateName = candidate.fields['Recipient'] || '';
-        if (!activeNames.includes(candidateName)) {
+        const name = candidate.fields['Recipient'] || '';
+        if (!activeNames.includes(name)) {
           queue.shift();
-          recentlyShown.push(candidateName);
+          recentlyShown.push(name);
           if (recentlyShown.length > records.length) recentlyShown.shift();
           return candidate;
         }
@@ -282,70 +157,43 @@
       return queue.shift();
     }
 
-    function tooClose(ax, ay, aw, ah, bx, by, bw, bh) {
-      const acx = ax + aw / 2;
-      const acy = ay + ah / 2;
-      const bcx = bx + bw / 2;
-      const bcy = by + bh / 2;
-      const dx = Math.abs(acx - bcx);
-      const dy = Math.abs(acy - bcy);
-      return dx < (aw / 2 + bw / 2 + MIN_DIST) && dy < (ah / 2 + bh / 2 + MIN_DIST);
+    function overlaps(ax, ay, aw, ah, bx, by, bw, bh) {
+      return !(ax + aw + GAP < bx || bx + bw + GAP < ax ||
+               ay + ah + GAP < by || by + bh + GAP < ay);
+    }
+
+    function inQR(x, y, w, h) {
+      const stageH = window.innerHeight;
+      const qrX = 0, qrY = stageH - QR_H;
+      return !(x + w < qrX || x > qrX + QR_W || y + h < qrY || y > qrY + QR_H);
     }
 
     function findPosition(w, h) {
-      const stageW = window.innerWidth;
-      const stageH = window.innerHeight;
-      const qrZone = { x: 0, y: stageH - QR_SAFE_HEIGHT, w: QR_SAFE_WIDTH, h: QR_SAFE_HEIGHT };
+      const SW = window.innerWidth, SH = window.innerHeight;
+      const maxX = SW - w - PAD;
+      const minY = HEADER_H + PAD;
+      const maxY = SH - h - PAD;
 
-      for (let attempt = 0; attempt < 200; attempt++) {
-        const x = Math.floor(Math.random() * (stageW - w - PAD * 2)) + PAD;
-        const y = Math.floor(Math.random() * (stageH - h - HEADER_H - PAD)) + HEADER_H;
-
-        const inQR = x < qrZone.x + qrZone.w && x + w > qrZone.x &&
-                     y < qrZone.y + qrZone.h && y + h > qrZone.y;
-        if (inQR) continue;
-
-        const tooCloseToOther = activeCards.some(c =>
-          tooClose(x, y, w, h, c.rect.x, c.rect.y, c.rect.w, c.rect.h)
-        );
-        if (tooCloseToOther) continue;
-
-        return { x, y, w, h };
-      }
-
-      // Fallback — relax distance requirement
-      for (let attempt = 0; attempt < 100; attempt++) {
-        const x = Math.floor(Math.random() * (stageW - w - PAD * 2)) + PAD;
-        const y = Math.floor(Math.random() * (stageH - h - HEADER_H - PAD)) + HEADER_H;
-        const inQR = x < qrZone.x + qrZone.w && x + w > qrZone.x &&
-                     y < qrZone.y + qrZone.h && y + h > qrZone.y;
-        if (!inQR) return { x, y, w, h };
+      for (let i = 0; i < 300; i++) {
+        const x = Math.floor(Math.random() * (maxX - PAD)) + PAD;
+        const y = Math.floor(Math.random() * (maxY - minY)) + minY;
+        if (inQR(x, y, w, h)) continue;
+        const bad = activeCards.some(c => overlaps(x, y, w, h, c.rect.x, c.rect.y, c.rect.w, c.rect.h));
+        if (!bad) return { x, y, w, h };
       }
       return null;
     }
 
     function animateCard(el, duration) {
       const start = performance.now();
-      const startScale = 0.9;
-      const endScale = 1.06;
-      const fadeInDuration = 600;
-      const fadeOutStart = duration - 500;
-
       function frame(now) {
-        const elapsed = now - start;
-        if (elapsed > duration) {
-          el.style.opacity = 0;
-          el.style.transform = `scale(${endScale})`;
-          return;
-        }
-        const progress = elapsed / duration;
-        const scale = startScale + (endScale - startScale) * progress;
+        const t = now - start;
+        if (t > duration) { el.style.opacity = 0; return; }
+        const p = t / duration;
+        const scale = 0.9 + 0.16 * p;
         let opacity = 1;
-        if (elapsed < fadeInDuration) {
-          opacity = elapsed / fadeInDuration;
-        } else if (elapsed > fadeOutStart) {
-          opacity = 1 - (elapsed - fadeOutStart) / 500;
-        }
+        if (t < 600) opacity = t / 600;
+        else if (t > duration - 500) opacity = 1 - (t - (duration - 500)) / 500;
         el.style.transform = `scale(${scale})`;
         el.style.opacity = Math.max(0, Math.min(1, opacity));
         requestAnimationFrame(frame);
@@ -354,10 +202,11 @@
     }
 
     function spawnCard() {
-      if (activeCards.length >= MAX_CARDS || records.length === 0) return;
-
+      if (spawning || activeCards.length >= MAX_CARDS || !records.length) return;
       const record = getNextRecord();
       if (!record) return;
+
+      spawning = true;
       const f = record.fields;
       const message = f['Message'] || '';
       const duration = getCardDuration(message);
@@ -376,12 +225,9 @@
           </div>
           <div class="message">"${message}"</div>
           <div class="sender">— ${f['Name'] || ''}</div>
-        </div>
-      `;
+        </div>`;
 
-      wrapper.style.left = '-9999px';
-      wrapper.style.top = '-9999px';
-      wrapper.style.opacity = '0';
+      wrapper.style.cssText = 'left:-9999px;top:-9999px;opacity:0;';
       stage.appendChild(wrapper);
 
       requestAnimationFrame(() => {
@@ -391,6 +237,7 @@
 
         if (!pos) {
           wrapper.remove();
+          spawning = false;
           return;
         }
 
@@ -398,8 +245,9 @@
         wrapper.style.top = pos.y + 'px';
         wrapper.style.transformOrigin = 'center center';
 
-        const cardEntry = { el: wrapper, rect: { x: pos.x, y: pos.y, w, h }, name: f['Recipient'] || '' };
-        activeCards.push(cardEntry);
+        const entry = { el: wrapper, rect: { x: pos.x, y: pos.y, w, h }, name: f['Recipient'] || '' };
+        activeCards.push(entry);
+        spawning = false;
 
         animateCard(wrapper, duration);
 
@@ -407,7 +255,7 @@
 
         setTimeout(() => {
           wrapper.remove();
-          activeCards = activeCards.filter(c => c !== cardEntry);
+          activeCards = activeCards.filter(c => c !== entry);
         }, duration);
       });
     }
@@ -416,17 +264,13 @@
       await fetchRecords();
       buildQueue();
       setTimeout(() => spawnCard(), 0);
-      setTimeout(() => spawnCard(), 1000);
-      setTimeout(() => spawnCard(), 2000);
-      setTimeout(() => spawnCard(), 3000);
-      setInterval(() => {
-        if (activeCards.length < MAX_CARDS) spawnCard();
-      }, SPAWN_INTERVAL);
+      setTimeout(() => spawnCard(), 1200);
+      setTimeout(() => spawnCard(), 2400);
+      setInterval(() => { if (activeCards.length < MAX_CARDS) spawnCard(); }, SPAWN_INTERVAL);
       setInterval(fetchRecords, 3000);
     }
 
     init();
   </script>
-
 </body>
 </html>
