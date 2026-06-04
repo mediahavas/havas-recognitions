@@ -52,7 +52,7 @@
     }
     header p {
       font-family: 'BaikalNormalReg', Arial, sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       color: #ffffff;
       font-weight: 300;
     }
@@ -190,7 +190,7 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.1e364962c8bd8febc5c24c2fd60999d1cfed3a74dbe24129a6fdd449294edc15';
+    const TOKEN = 'patNkkOOneKrjQRUH.6587224c8103eb3727334baf776e5d3d987c3e095df1f7f38d7f6b36fe68ed57';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
@@ -203,7 +203,7 @@
 
     let activeCards = [];
     let records = [];
-    let recordIndex = 0;
+    let queue = [];
     let recentlyShown = [];
     let lastZone = -1;
 
@@ -223,6 +223,17 @@
       return a;
     }
 
+    function buildQueue() {
+      let shuffled = shuffle([...records]);
+      if (recentlyShown.length > 0 && shuffled.length > 1) {
+        const lastName = recentlyShown[recentlyShown.length - 1];
+        if (shuffled[0].fields['Recipient'] === lastName) {
+          shuffled.push(shuffled.shift());
+        }
+      }
+      queue = shuffled;
+    }
+
     async function fetchRecords() {
       try {
         const res = await fetch(
@@ -232,8 +243,8 @@
         const data = await res.json();
         if (data.records && data.records.length > 0) {
           if (data.records.length !== records.length) {
-            records = shuffle(data.records);
-            recordIndex = 0;
+            records = data.records;
+            buildQueue();
           }
           if (records.length <= 3) {
             MAX_CARDS = 1;
@@ -250,28 +261,23 @@
 
     function getNextRecord() {
       if (records.length === 0) return null;
-      if (recordIndex >= records.length) {
-        records = shuffle([...records]);
-        recordIndex = 0;
-      }
+      if (queue.length === 0) buildQueue();
+
       const activeNames = activeCards.map(c => c.name);
       let attempts = 0;
-      while (attempts < records.length) {
-        const candidate = records[recordIndex % records.length];
+      while (attempts < queue.length) {
+        const candidate = queue[0];
         const candidateName = candidate.fields['Recipient'] || '';
-        const notOnScreen = !activeNames.includes(candidateName);
-        const notRecentlyShown = !recentlyShown.includes(candidateName);
-        recordIndex++;
-        attempts++;
-        if (notOnScreen && notRecentlyShown) {
+        if (!activeNames.includes(candidateName)) {
+          queue.shift();
           recentlyShown.push(candidateName);
-          const bufferSize = Math.max(1, records.length - 1);
-          if (recentlyShown.length > bufferSize) recentlyShown.shift();
+          if (recentlyShown.length > records.length) recentlyShown.shift();
           return candidate;
         }
+        queue.push(queue.shift());
+        attempts++;
       }
-      const record = records[recordIndex % records.length];
-      recordIndex++;
+      const record = queue.shift();
       return record;
     }
 
@@ -288,7 +294,6 @@
 
       const qrZone = { x: 0, y: stageH - QR_SAFE_HEIGHT, w: QR_SAFE_WIDTH, h: QR_SAFE_HEIGHT };
 
-      // Keep cards fully within screen with generous margin
       const zones = [
         { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
         { xMin: stageW / 2, xMax: stageW - w - MARGIN, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
@@ -306,11 +311,8 @@
       for (let attempt = 0; attempt < 80; attempt++) {
         const x = Math.floor(Math.random() * Math.max(1, zone.xMax - zone.xMin)) + zone.xMin;
         const y = Math.floor(Math.random() * Math.max(1, zone.yMax - zone.yMin)) + zone.yMin;
-
-        // Clamp to screen bounds
         const clampedX = Math.max(MARGIN, Math.min(stageW - w - MARGIN, x));
         const clampedY = Math.max(HEADER_H, Math.min(stageH - h - MARGIN, y));
-
         const candidate = { x: clampedX, y: clampedY, w, h };
         const overlapsCard = activeCards.some(c => rectsOverlap(candidate, c.rect));
         const overlapsQR = rectsOverlap(candidate, qrZone);
@@ -398,7 +400,6 @@
 
         animateCard(wrapper, duration);
 
-        // Spawn next card just as this one starts fading out
         setTimeout(() => spawnCard(), duration - 1500);
 
         setTimeout(() => {
@@ -410,6 +411,7 @@
 
     async function init() {
       await fetchRecords();
+      buildQueue();
       setTimeout(() => spawnCard(), 0);
       setTimeout(() => spawnCard(), 1000);
       setTimeout(() => spawnCard(), 2000);
