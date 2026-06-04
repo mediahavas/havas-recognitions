@@ -52,7 +52,7 @@
     }
     header p {
       font-family: 'BaikalNormalReg', Arial, sans-serif;
-      font-size: 22px;
+      font-size: 24px;
       color: #ffffff;
       font-weight: 300;
     }
@@ -74,6 +74,9 @@
       max-width: 480px;
       opacity: 0;
       transform: scale(0.9);
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .card {
       background: #ffffff;
@@ -190,7 +193,7 @@
   </div>
 
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.6587224c8103eb3727334baf776e5d3d987c3e095df1f7f38d7f6b36fe68ed57';
+    const TOKEN = 'patNkkOOneKrjQRUH.7d8ed320f162c37aa1856efbc9a254586b5140e79dd16070ab57b2caad7aeaf2';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
