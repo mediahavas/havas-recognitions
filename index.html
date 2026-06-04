@@ -6,31 +6,23 @@
   <title>Havas Wall of Fame</title>
   <style>
     @font-face {
-      font-family: 'BaikalExp';
-      src: url('BaikalExp-Bold.otf') format('opentype');
-      font-weight: 700;
-    }
-    @font-face {
       font-family: 'BaikalExpSemi';
       src: url('BaikalExp-SemiBold.otf') format('opentype');
-      font-weight: 600;
     }
     @font-face {
-      font-family: 'BaikalNormal';
+      font-family: 'BaikalNormalReg';
       src: url('BaikalNormal-Regular.otf') format('opentype');
-      font-weight: 400;
     }
     @font-face {
-      font-family: 'BaikalSemiBold';
+      font-family: 'BaikalNormalSemi';
       src: url('BaikalNormal-SemiBold.otf') format('opentype');
-      font-weight: 600;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-image: url('Background.png');
       background-size: cover;
       background-position: top center;
-      font-family: 'BaikalNormal', Arial, sans-serif;
+      font-family: 'BaikalNormalReg', Arial, sans-serif;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
@@ -42,8 +34,8 @@
       position: relative;
       z-index: 10;
     }
-    .havas-logo {
-      height: 22px;
+    .hmn-logo {
+      height: 24px;
       margin-bottom: 16px;
       display: block;
       margin-left: auto;
@@ -52,7 +44,6 @@
     header h1 {
       font-family: 'BaikalExpSemi', Arial, sans-serif;
       font-size: 68px;
-      font-weight: 600;
       color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -60,12 +51,9 @@
       margin-bottom: 12px;
     }
     header p {
-      font-family: 'BaikalNormal', Arial, sans-serif;
-      font-weight: 400;
+      font-family: 'BaikalNormalReg', Arial, sans-serif;
       font-size: 22px;
-      letter-spacing: 0px;
       color: #ffffff;
-      -webkit-font-smoothing: antialiased;
     }
     .stage {
       position: absolute;
@@ -118,7 +106,7 @@
       gap: 5px;
     }
     .eyebrow {
-      font-family: 'BaikalSemiBold', Arial, sans-serif;
+      font-family: 'BaikalNormalSemi', Arial, sans-serif;
       font-size: 12px;
       letter-spacing: 1px;
       color: #e60000;
@@ -128,47 +116,88 @@
     .name {
       font-family: 'BaikalExpSemi', Arial, sans-serif;
       font-size: 26px;
-      font-weight: 600;
       color: #000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       line-height: 1.1;
     }
     .message {
-      font-family: 'BaikalNormal', Arial, sans-serif;
-      font-weight: 400;
+      font-family: 'BaikalNormalReg', Arial, sans-serif;
       font-size: 17px;
       color: #222;
       line-height: 1.3;
       margin-bottom: 18px;
     }
     .sender {
-      font-family: 'BaikalNormal', Arial, sans-serif;
-      font-weight: 400;
+      font-family: 'BaikalNormalReg', Arial, sans-serif;
       font-size: 14px;
       color: #000;
+    }
+    .qr-container {
+      position: fixed;
+      bottom: 32px;
+      left: 32px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .qr-box {
+      width: 170px;
+      height: 170px;
+      background: #000000;
+      border-radius: 16px;
+      border: 4px solid rgba(230, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-shadow: none;
+    }
+    .qr-box img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .qr-label {
+      font-family: 'BaikalExpSemi', Arial, sans-serif;
+      font-size: 14px;
+      color: #ffffff;
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      line-height: 1.4;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <img class="havas-logo" src="Havas%20Logo.svg" alt="Havas"/>
+    <img class="hmn-logo" src="hmn.svg" alt="Havas Media Network"/>
     <h1>Wall of Fame</h1>
     <p>Recognizing the people who make us great</p>
   </header>
 
   <div class="stage" id="stage"></div>
 
+  <div class="qr-container">
+    <div class="qr-box">
+      <img src="qrcode.svg" alt="QR Code" style="filter: invert(1);"/>
+    </div>
+    <div class="qr-label">SCAN TO SEND<br>A SHOUTOUT</div>
+  </div>
+
   <script>
-    const TOKEN = 'patNkkOOneKrjQRUH.41799a7543d469d5f5d5f95269e6182783d2ebe930ea55b66421d8562e6f8636';
+    const TOKEN = 'patNkkOOneKrjQRUH.bc89ccc68c5fd3fa26a0dc6272f298877c02f1941b37257bbf019418321e3d70';
     const BASE_ID = 'apprduW0ct2f5OLEa';
     const TABLE_NAME = 'Table 1';
 
     const MARGIN = 24;
+    const QR_SAFE_WIDTH = 220;
+    const QR_SAFE_HEIGHT = 260;
     let MAX_CARDS = 1;
     const HEADER_H = 230;
-    const CARD_DURATION = 3000;
     const SPAWN_INTERVAL = 1000;
 
     let activeCards = [];
@@ -176,6 +205,13 @@
     let recordIndex = 0;
     let recentlyShown = [];
     let lastZone = -1;
+
+    function getCardDuration(message) {
+      const len = message.length;
+      if (len <= 80) return 3000;
+      if (len <= 160) return 5000;
+      return 7000;
+    }
 
     function shuffle(arr) {
       const a = [...arr];
@@ -213,24 +249,19 @@
 
     function getNextRecord() {
       if (records.length === 0) return null;
-
       if (recordIndex >= records.length) {
         records = shuffle([...records]);
         recordIndex = 0;
       }
-
       const activeNames = activeCards.map(c => c.name);
-
       let attempts = 0;
       while (attempts < records.length) {
         const candidate = records[recordIndex % records.length];
         const candidateName = candidate.fields['Recipient'] || '';
         const notOnScreen = !activeNames.includes(candidateName);
         const notRecentlyShown = !recentlyShown.includes(candidateName);
-
         recordIndex++;
         attempts++;
-
         if (notOnScreen && notRecentlyShown) {
           recentlyShown.push(candidateName);
           const bufferSize = Math.max(1, records.length - 1);
@@ -238,7 +269,6 @@
           return candidate;
         }
       }
-
       const record = records[recordIndex % records.length];
       recordIndex++;
       return record;
@@ -254,6 +284,9 @@
     function findPosition(w, h) {
       const stageW = window.innerWidth;
       const stageH = window.innerHeight;
+
+      // QR safe zone — bottom left
+      const qrZone = { x: 0, y: stageH - QR_SAFE_HEIGHT, w: QR_SAFE_WIDTH, h: QR_SAFE_HEIGHT };
 
       const zones = [
         { xMin: MARGIN, xMax: stageW / 2 - w / 2, yMin: HEADER_H, yMax: stageH / 2 - h / 2 },
@@ -273,7 +306,9 @@
         const x = Math.floor(Math.random() * Math.max(1, zone.xMax - zone.xMin)) + zone.xMin;
         const y = Math.floor(Math.random() * Math.max(1, zone.yMax - zone.yMin)) + zone.yMin;
         const candidate = { x, y, w, h };
-        if (!activeCards.some(c => rectsOverlap(candidate, c.rect))) return candidate;
+        const overlapsCard = activeCards.some(c => rectsOverlap(candidate, c.rect));
+        const overlapsQR = rectsOverlap(candidate, qrZone);
+        if (!overlapsCard && !overlapsQR) return candidate;
       }
       return null;
     }
@@ -313,6 +348,8 @@
       const record = getNextRecord();
       if (!record) return;
       const f = record.fields;
+      const message = f['Message'] || '';
+      const duration = getCardDuration(message);
 
       const stage = document.getElementById('stage');
       const wrapper = document.createElement('div');
@@ -326,7 +363,7 @@
               <div class="name">${f['Recipient'] || ''}</div>
             </div>
           </div>
-          <div class="message">"${f['Message'] || ''}"</div>
+          <div class="message">"${message}"</div>
           <div class="sender">— ${f['Name'] || ''}</div>
         </div>
       `;
@@ -353,15 +390,14 @@
         const cardEntry = { el: wrapper, rect: pos, name: f['Recipient'] || '' };
         activeCards.push(cardEntry);
 
-        animateCard(wrapper, CARD_DURATION);
+        animateCard(wrapper, duration);
 
-        // Spawn next card 500ms before this one disappears
-        setTimeout(() => spawnCard(), CARD_DURATION - 500);
+        setTimeout(() => spawnCard(), duration - 500);
 
         setTimeout(() => {
           wrapper.remove();
           activeCards = activeCards.filter(c => c !== cardEntry);
-        }, CARD_DURATION);
+        }, duration);
       });
     }
 
